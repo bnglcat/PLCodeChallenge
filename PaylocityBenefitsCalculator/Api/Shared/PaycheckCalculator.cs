@@ -20,7 +20,7 @@ namespace Api.Shared
             // Additional costs for dependents over 50 years old
             dependentCosts += dependents.Count(d => d.DateOfBirth < DateTime.Now.AddYears(-_configuration!.AdditionalCostAgeThreashold)) * _configuration!.AdditionaAgeCostPerMonth * 12m;
 
-            return dependentCosts;
+            return Math.Round( dependentCosts / _configuration.PayPeriodsPerYear, 2);
         }
 
         public decimal CalculateEmployeeDeductions(decimal salary)
@@ -36,7 +36,7 @@ namespace Api.Shared
                 employeeDeduction += salary * _configuration!.AdditionalEmployeeSalaryCostPercentage;
             }
 
-            return Math.Round(employeeDeduction, 2);
+            return Math.Round(employeeDeduction / _configuration.PayPeriodsPerYear, 2);
         }
 
         public decimal CalculateGrossPay(decimal salary)

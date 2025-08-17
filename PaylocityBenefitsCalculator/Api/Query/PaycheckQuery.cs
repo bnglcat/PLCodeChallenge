@@ -51,8 +51,8 @@ namespace Api.Query
 
             var payrollCalculator = PaycheckCalculatorFactory.CreatePaycheckCalculator(_payrollConfiguration);
 
-            var dependentYearlyDeductions = payrollCalculator.CalculateDependentDeductions(employee.Dependents);
-            var employeeYearlyDeductions = payrollCalculator.CalculateEmployeeDeductions(employee.Salary);
+            var dependentMonthlyDeductions = payrollCalculator.CalculateDependentDeductions(employee.Dependents);
+            var employeeMonthlyDeductions = payrollCalculator.CalculateEmployeeDeductions(employee.Salary);
 
             var payCheck = new GetPaycheckDto
             {
@@ -60,22 +60,13 @@ namespace Api.Query
                 EmployeeName = $"{employee.FirstName} {employee.LastName}",
                 Salary = employee.Salary,
                 GrossPay = payrollCalculator.CalculateGrossPay(employee.Salary),
-                DependentDeductions = dependentYearlyDeductions,
-                EmployeeDeductions = employeeYearlyDeductions
+                DependentDeductions = dependentMonthlyDeductions,
+                EmployeeDeductions = employeeMonthlyDeductions
             };
 
-            BuildEmployeePaycheck(payCheck, dependentYearlyDeductions, employeeYearlyDeductions);
-
+          
             return await Task.FromResult(payCheck);
-        }
-
-        private void BuildEmployeePaycheck(GetPaycheckDto payCheck, decimal dependentYearlyDeductions, decimal employeeYearlyDeductions)
-        {
-            payCheck.GrossPay = Math.Round(payCheck.Salary / _payrollConfiguration!.PayPeriodsPerYear, 2);
-            payCheck.DependentDeductions = Math.Round(dependentYearlyDeductions / _payrollConfiguration!.PayPeriodsPerYear, 2);
-            payCheck.EmployeeDeductions = Math.Round(employeeYearlyDeductions / _payrollConfiguration!.PayPeriodsPerYear, 2);
-        }
-        
+        }        
     }
 
 
