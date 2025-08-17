@@ -28,8 +28,9 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddScoped<IEmployeeRepository, MockEmployeeRepository>();
-//builder.Services.AddScoped<IDependentRepository, MockDependentRepository>();
+builder.Services.AddScoped<IDependentRepository, MockDependentRepository>();
 builder.Services.AddTransient<IEmployeeQuery, EmployeeQuery>();
+builder.Services.AddTransient<IDependentQuery, DependentQuery>();
 
 var app = builder.Build();
 
