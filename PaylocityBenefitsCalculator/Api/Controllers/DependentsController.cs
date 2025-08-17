@@ -1,4 +1,5 @@
-﻿using Api.Dtos.Dependent;
+﻿using Api.Command;
+using Api.Dtos.Dependent;
 using Api.Models;
 using Api.Query;
 using Microsoft.AspNetCore.Mvc;
@@ -11,10 +12,12 @@ namespace Api.Controllers;
 public class DependentsController : ControllerBase
 {
     private readonly IDependentQuery _dependentQuery;
+    private readonly IAddDependent _addDependent;
 
-    public DependentsController(IDependentQuery dependentQuery)
+    public DependentsController(IDependentQuery dependentQuery, IAddDependent addDependent)
     {
         _dependentQuery = dependentQuery;
+        _addDependent = addDependent;
     }
 
     [SwaggerOperation(Summary = "Get dependent by id")]
@@ -68,5 +71,45 @@ public class DependentsController : ControllerBase
         };
         return Ok(response);
 
+    }
+
+    [SwaggerOperation(Summary = "Add a dependant to an employee")]
+    [HttpPost()]
+    public async Task<ActionResult<ApiResponse<AddDependentDto>>> Add([FromBody] AddDependentDto dependent)
+    {
+        try
+        {
+            var newDependent = await _addDependent.AddDependentAsync(dependent);
+
+            return Ok(new ApiResponse<AddDependentDto>
+            {
+                Data = new AddDependentDto
+                {
+                    Id = newDependent.Id,
+                    FirstName = newDependent.FirstName,
+                    LastName = newDependent.LastName,
+                    Relationship = newDependent.Relationship,
+                    DateOfBirth = newDependent.DateOfBirth,
+                    EmployeeId = newDependent.EmployeeId
+                },
+                Success = true
+            });
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new ApiResponse<AddDependentDto>
+            {
+                Success = false,
+                Message = ex.Message
+            });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new ApiResponse<AddDependentDto>
+            {
+                Success = false,
+                Error = "An unexpected error occurred: " + ex.Message
+            });
+        }        
     }
 }

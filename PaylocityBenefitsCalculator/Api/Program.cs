@@ -1,3 +1,4 @@
+using Api.Command;
 using Api.Query;
 using Api.Repository;
 using Microsoft.OpenApi.Models;
@@ -31,6 +32,8 @@ builder.Services.AddScoped<IEmployeeRepository, MockEmployeeRepository>();
 builder.Services.AddScoped<IDependentRepository, MockDependentRepository>();
 builder.Services.AddTransient<IEmployeeQuery, EmployeeQuery>();
 builder.Services.AddTransient<IDependentQuery, DependentQuery>();
+
+builder.Services.AddTransient<IAddDependent, AddDependent>();
 
 var app = builder.Build();
 

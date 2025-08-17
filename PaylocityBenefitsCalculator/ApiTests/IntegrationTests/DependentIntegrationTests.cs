@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Net.Http;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Api.Dtos.Dependent;
 using Api.Models;
@@ -75,6 +77,99 @@ public class DependentIntegrationTests : IntegrationTest
     {
         var response = await HttpClient.GetAsync($"/api/v1/dependents/{int.MinValue}");
         await response.ShouldReturn(HttpStatusCode.NotFound);
+    }
+
+
+    // The following tests are all working against the currently hard coded list of dependents and employees in the dependents 
+    // employee respositories.  In a real application, I would build out a full set of mock repositories for the tests so that 
+    // we could control the data and ensure that the tests are isolated from each other.  However, in the interest of time,
+    // I have just used the existing repositories and hard coded data.  
+    [Fact]
+    public async Task WhenAddingADependentWithRelationshipNone_ShouldReturnBadRequest()
+    {
+        var depenentCount = 4;
+
+        var newDependent = new AddDependentDto
+        {
+            FirstName = "Test",
+            LastName = "Dependent",
+            Relationship = Relationship.None,
+            DateOfBirth = new DateTime(1990, 1, 1),
+            EmployeeId = 1
+        };
+
+        var content = JsonContent.Create(newDependent);
+
+        var response = await HttpClient.PostAsync("/api/v1/dependents", content);
+        
+        await response.ShouldReturn(HttpStatusCode.BadRequest);
+    }
+
+    [Fact]
+    public async Task WhenAddingADependentWithRelationshipChild_ShouldReturnOk()
+    {
+        var depenentCount = 4;
+
+        var newDependent = new AddDependentDto
+        {
+            FirstName = "Test",
+            LastName = "Dependent",
+            Relationship = Relationship.Child,
+            DateOfBirth = new DateTime(1990, 1, 1),
+            EmployeeId = 1
+        };
+
+        var content = JsonContent.Create(newDependent);
+
+        var response = await HttpClient.PostAsync("/api/v1/dependents", content);
+
+        newDependent.Id = depenentCount + 1; 
+
+        await response.ShouldReturn(HttpStatusCode.OK, newDependent);
+    }
+
+    [Fact]
+    public async Task WhenAddingADependentWithRelationshipSpouseWithNoSpouse_ShouldReturnOk()
+    {
+        var depenentCount = 4;
+
+        var newDependent = new AddDependentDto
+        {
+            FirstName = "Test",
+            LastName = "Dependent",
+            Relationship = Relationship.Spouse,
+            DateOfBirth = new DateTime(1990, 1, 1),
+            EmployeeId = 1
+        };
+
+        var content = JsonContent.Create(newDependent);
+
+        var response = await HttpClient.PostAsync("/api/v1/dependents", content);
+
+        newDependent.Id = depenentCount + 1;
+
+        await response.ShouldReturn(HttpStatusCode.OK, newDependent);
+    }
+
+    [Fact]
+    public async Task WhenAddingADependentWithRelationshipSpouseWithExistingSpouse_ShouldReturnBadRequest()
+    {
+        var depenentCount = 4;
+
+        var newDependent = new AddDependentDto
+        {
+            FirstName = "Test",
+            LastName = "Dependent",
+            Relationship = Relationship.Spouse,
+            DateOfBirth = new DateTime(1990, 1, 1),
+            EmployeeId = 2
+        };
+
+        var content = JsonContent.Create(newDependent);
+
+        var response = await HttpClient.PostAsync("/api/v1/dependents", content);
+
+        await response.ShouldReturn(HttpStatusCode.BadRequest);
     }
 }
 

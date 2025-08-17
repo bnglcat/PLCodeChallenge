@@ -44,6 +44,22 @@ namespace Api.Repository
                 EmployeeId = 3
             }
         ];
+
+        public Task<Dependent> AddDependentAsync(Dependent dependent)
+        {
+            if (dependent == null || dependent.EmployeeId <= 0)
+            {
+                throw new ArgumentException("Invalid dependent data");
+            }
+            dependent.Id = _dependents.Count + 1; // Simple ID generation
+            
+            _dependents.Add(dependent);
+            
+            return Task.FromResult(dependent);
+
+
+        }
+
         public async Task<List<Dependent>> GetAllDependentsAsync() => await Task.FromResult(_dependents);
         public async Task<Dependent?> GetDependentByIdAsync(int id) =>
              await Task.FromResult(_dependents.FirstOrDefault(e => e.Id == id));

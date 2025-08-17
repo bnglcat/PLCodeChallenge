@@ -6,6 +6,7 @@ namespace Api.Repository
     {
         Task<Dependent?> GetDependentByIdAsync(int id);
         Task<List<Dependent>> GetAllDependentsAsync();
+        Task<Dependent> AddDependentAsync(Dependent dependent);
     }
 
 }
