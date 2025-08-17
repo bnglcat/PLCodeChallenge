@@ -35,6 +35,7 @@ builder.Services.AddTransient<IDependentQuery, DependentQuery>();
 
 builder.Services.AddTransient<IAddDependent, AddDependent>();
 builder.Services.AddTransient<IPaycheckQuery, PaycheckQuery>();
+builder.Services.AddTransient<IPayrollConfigurationRepository, PayrollConfigurationRepository>();
 
 var app = builder.Build();
 

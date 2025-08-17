@@ -32,7 +32,7 @@ namespace ApiTests.IntegrationTests
                 employeeId = 1,
                 employeeName = "LeBron James",
                 grossPay = 2900.81,
-                dependentDeductions = 0,
+                dependentDeductions = 0.00m,
                 employeeDeductions = 461.54,
                 netPay = 2439.27,
                 salary = 75420.99
