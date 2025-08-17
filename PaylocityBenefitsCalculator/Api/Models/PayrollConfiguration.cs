@@ -14,7 +14,7 @@
 
         public decimal AdditionalCostSalaryThreshold { get; set; }
 
-        public decimal AdditionalEmployeeCostPerMonth { get; set; }
+        public decimal AdditionalEmployeeSalaryCostPercentage { get; set; }
 
         public int AdditionalCostAgeThreashold { get; set; }
 

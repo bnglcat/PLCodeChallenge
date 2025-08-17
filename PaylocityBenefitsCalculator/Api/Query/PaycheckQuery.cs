@@ -1,6 +1,7 @@
 ﻿using Api.Dtos.Paycheck;
 using Api.Models;
 using Api.Repository;
+using Api.Shared;
 
 namespace Api.Query
 {
@@ -48,14 +49,19 @@ namespace Api.Query
                 throw new KeyNotFoundException($"Employee with ID {employeeId} not found.");
             }
 
-            var dependentYearlyDeductions = CalculateDependentDeductions(employee.Dependents);
-            var employeeYearlyDeductions = CalculateEmployeeDeductions(employee);
+            var payrollCalculator = PaycheckCalculatorFactory.CreatePaycheckCalculator(_payrollConfiguration);
+
+            var dependentYearlyDeductions = payrollCalculator.CalculateDependentDeductions(employee.Dependents);
+            var employeeYearlyDeductions = payrollCalculator.CalculateEmployeeDeductions(employee.Salary);
 
             var payCheck = new GetPaycheckDto
             {
                 EmployeeId = employee.Id,
                 EmployeeName = $"{employee.FirstName} {employee.LastName}",
-                Salary = employee.Salary
+                Salary = employee.Salary,
+                GrossPay = payrollCalculator.CalculateGrossPay(employee.Salary),
+                DependentDeductions = dependentYearlyDeductions,
+                EmployeeDeductions = employeeYearlyDeductions
             };
 
             BuildEmployeePaycheck(payCheck, dependentYearlyDeductions, employeeYearlyDeductions);
@@ -69,31 +75,7 @@ namespace Api.Query
             payCheck.DependentDeductions = Math.Round(dependentYearlyDeductions / _payrollConfiguration!.PayPeriodsPerYear, 2);
             payCheck.EmployeeDeductions = Math.Round(employeeYearlyDeductions / _payrollConfiguration!.PayPeriodsPerYear, 2);
         }
-
-        private decimal CalculateEmployeeDeductions(Employee employee)
-        {
-            // Base deduction is $1000
-            var employeeDeduction = 1000m * 12;
-
-            if (employee.Salary > _payrollConfiguration!.AdditionalCostSalaryThreshold)
-            {
-                // Additional deduction for high earners
-                employeeDeduction += employee.Salary * _payrollConfiguration!.AdditionalEmployeeCostPerMonth;
-            }
-
-            return Math.Round(employeeDeduction, 2);
-        }
-
-        private decimal CalculateDependentDeductions(ICollection<Dependent> dependents)
-        {
-            // Base dependent cost is $600 per dependent
-            var dependentCosts = dependents.Count * _payrollConfiguration!.DependantCostPerMonth * 12;
-
-            // Additional costs for dependents over 50 years old
-            dependentCosts += dependents.Count(d => d.DateOfBirth < DateTime.Now.AddYears(-_payrollConfiguration!.AdditionalCostAgeThreashold)) * _payrollConfiguration!.AdditionaAgeCostPerMonth * 12m;
-
-            return dependentCosts;
-        }
+        
     }
 
 

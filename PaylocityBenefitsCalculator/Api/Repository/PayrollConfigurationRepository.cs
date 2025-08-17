@@ -14,7 +14,7 @@ namespace Api.Repository
                 DependantCostPerMonth = 600.00m,
                 EmployeeCostPerMonth = 1000.00m,
                 AdditionalCostSalaryThreshold = 80000.00m,
-                AdditionalEmployeeCostPerMonth = .02m,
+                AdditionalEmployeeSalaryCostPercentage = .02m,
                 AdditionalCostAgeThreashold = 50,
                 AdditionaAgeCostPerMonth = 200.00m
             },
@@ -26,7 +26,7 @@ namespace Api.Repository
                 DependantCostPerMonth = 200.00m,
                 EmployeeCostPerMonth = 500.00m,
                 AdditionalCostSalaryThreshold = 50000.00m,
-                AdditionalEmployeeCostPerMonth = .01m,
+                AdditionalEmployeeSalaryCostPercentage = .01m,
                 AdditionalCostAgeThreashold = 65,
                 AdditionaAgeCostPerMonth = 100.00m
             }
