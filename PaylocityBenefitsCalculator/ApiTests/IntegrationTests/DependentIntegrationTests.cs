@@ -80,14 +80,14 @@ public class DependentIntegrationTests : IntegrationTest
     }
 
 
-    // The following tests are all working against the currently hard coded list of dependents and employees in the dependents 
+    // The following tests are all working against the currently hard coded list of dependents and employees in the mock dependents 
     // employee respositories.  In a real application, I would build out a full set of mock repositories for the tests so that 
     // we could control the data and ensure that the tests are isolated from each other.  However, in the interest of time,
     // I have just used the existing repositories and hard coded data.  
     [Fact]
     public async Task WhenAddingADependentWithRelationshipNone_ShouldReturnBadRequest()
     {
-        var depenentCount = 4;
+        const int depenentCount = 4;
 
         var newDependent = new AddDependentDto
         {

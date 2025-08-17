@@ -108,7 +108,7 @@ public class DependentsController : ControllerBase
             return StatusCode(500, new ApiResponse<AddDependentDto>
             {
                 Success = false,
-                Error = "An unexpected error occurred: " + ex.Message
+                Error = $"An error occurred while processing your request: {ex.Message}"
             });
         }        
     }

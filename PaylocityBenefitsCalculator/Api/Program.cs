@@ -34,6 +34,7 @@ builder.Services.AddTransient<IEmployeeQuery, EmployeeQuery>();
 builder.Services.AddTransient<IDependentQuery, DependentQuery>();
 
 builder.Services.AddTransient<IAddDependent, AddDependent>();
+builder.Services.AddTransient<IPaycheckQuery, PaycheckQuery>();
 
 var app = builder.Build();
 
