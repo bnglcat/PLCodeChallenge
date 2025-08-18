@@ -1,5 +1,4 @@
-﻿using Api.Dtos.Employee;
-using Api.Dtos.Paycheck;
+﻿using Api.Dtos.Paycheck;
 using Api.Models;
 using Api.Query;
 using Microsoft.AspNetCore.Mvc;
@@ -24,7 +23,7 @@ namespace Api.Controllers
         {
             try
             {
-                var paycheck = await _paycheckQuery.GetPaycheckByEmployeeIdAsync(employeeId);
+                var paycheck = await _paycheckQuery.GetAllPaychecksByEmployeeIdAsync(employeeId);
 
                 var response = new ApiResponse<GetPaycheckDto>
                 {
@@ -34,7 +33,7 @@ namespace Api.Controllers
 
                 return Ok(response);
             }
-            catch(KeyNotFoundException ex)
+            catch (KeyNotFoundException ex)
             {
                 return NotFound(new ApiResponse<GetPaycheckDto>
                 {

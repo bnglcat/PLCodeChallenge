@@ -1,11 +1,11 @@
+using Api.Dtos.Dependent;
+using Api.Models;
 using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
-using Api.Dtos.Dependent;
-using Api.Models;
 using Xunit;
 
 namespace ApiTests.IntegrationTests;
@@ -101,7 +101,7 @@ public class DependentIntegrationTests : IntegrationTest
         var content = JsonContent.Create(newDependent);
 
         var response = await HttpClient.PostAsync("/api/v1/dependents", content);
-        
+
         await response.ShouldReturn(HttpStatusCode.BadRequest);
     }
 
@@ -123,7 +123,7 @@ public class DependentIntegrationTests : IntegrationTest
 
         var response = await HttpClient.PostAsync("/api/v1/dependents", content);
 
-        newDependent.Id = depenentCount + 1; 
+        newDependent.Id = depenentCount + 1;
 
         await response.ShouldReturn(HttpStatusCode.OK, newDependent);
     }

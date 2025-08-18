@@ -34,7 +34,7 @@ namespace Api.Repository
 
         public PayrollConfigurationRepository()
         {
-           
+
         }
 
         public async Task<PayrollConfiguration?> GetClientPayrollConfiguration(int clientId)

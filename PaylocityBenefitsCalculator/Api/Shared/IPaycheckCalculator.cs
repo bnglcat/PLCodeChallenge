@@ -4,10 +4,10 @@ namespace Api.Shared
 {
     public interface IPaycheckCalculator
     {
-        decimal CalculateDependentDeductions(ICollection<Dependent> dependents);
-        decimal CalculateEmployeeDeductions(decimal salary);
-
-        decimal CalculateGrossPay(decimal salary);
-        decimal CalculateNetPay(decimal grossPay, decimal dependentDeductions, decimal employeeDeductions);
+        decimal CalculateDependentDeductionsPerPeriod(ICollection<Dependent> dependents);
+        decimal CalculateEmployeeDeductionsPerPeriod(decimal salary);
+        List<decimal> CalculateEvenDistribution(decimal monthlyTotal, int periods);
+        decimal CalculateGrossPayPerPeriod(decimal salary);
+        decimal CalculateNetPayPerPeriod(decimal grossPay, decimal dependentDeductions, decimal employeeDeductions);
     }
 }

@@ -52,9 +52,9 @@ namespace Api.Repository
                 throw new ArgumentException("Invalid dependent data");
             }
             dependent.Id = _dependents.Count + 1; // Simple ID generation
-            
+
             _dependents.Add(dependent);
-            
+
             return Task.FromResult(dependent);
 
 

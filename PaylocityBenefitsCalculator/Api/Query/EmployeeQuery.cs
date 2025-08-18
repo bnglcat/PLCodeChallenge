@@ -15,7 +15,7 @@ namespace Api.Query
         private readonly IEmployeeRepository _employeeRepository;
 
         public EmployeeQuery(IEmployeeRepository employeeRepository)
-        { 
+        {
             _employeeRepository = employeeRepository;
         }
 

@@ -110,6 +110,6 @@ public class DependentsController : ControllerBase
                 Success = false,
                 Error = $"An error occurred while processing your request: {ex.Message}"
             });
-        }        
+        }
     }
 }

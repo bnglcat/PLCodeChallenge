@@ -12,18 +12,16 @@ namespace Api.Shared
             _configuration = configuration;
         }
 
-        public decimal CalculateDependentDeductions(ICollection<Dependent> dependents)
+        public decimal CalculateDependentDeductionsPerPeriod(ICollection<Dependent> dependents)
         {
-            // Base dependent cost is $600 per dependent
             var dependentCosts = dependents.Count * _configuration!.DependantCostPerMonth * 12;
 
-            // Additional costs for dependents over 50 years old
-            dependentCosts += dependents.Count(d => d.DateOfBirth < DateTime.Now.AddYears(-_configuration!.AdditionalCostAgeThreashold)) * _configuration!.AdditionaAgeCostPerMonth * 12m;
+            dependentCosts += dependents.Count(d => d.DateOfBirth < DateTime.Now.AddYears(-_configuration!.AdditionalCostAgeThreashold)) * _configuration!.AdditionaAgeCostPerMonth * 12;
 
-            return Math.Round( dependentCosts / _configuration.PayPeriodsPerYear, 2);
+            return dependentCosts / _configuration.PayPeriodsPerYear;
         }
 
-        public decimal CalculateEmployeeDeductions(decimal salary)
+        public decimal CalculateEmployeeDeductionsPerPeriod(decimal salary)
         {
             var employeeDeduction = _configuration.EmployeeCostPerMonth * 12;
 
@@ -36,17 +34,39 @@ namespace Api.Shared
                 employeeDeduction += salary * _configuration!.AdditionalEmployeeSalaryCostPercentage;
             }
 
-            return Math.Round(employeeDeduction / _configuration.PayPeriodsPerYear, 2);
+            return employeeDeduction / _configuration.PayPeriodsPerYear;
         }
 
-        public decimal CalculateGrossPay(decimal salary)
+        public decimal CalculateGrossPayPerPeriod(decimal salary)
         {
-            return Math.Round(salary / _configuration.PayPeriodsPerYear, 2);
+            return salary / _configuration.PayPeriodsPerYear;
         }
 
-        public decimal CalculateNetPay(decimal grossPay, decimal dependentDeductions, decimal employeeDeductions)
+        public decimal CalculateNetPayPerPeriod(decimal grossPay, decimal dependentDeductions, decimal employeeDeductions)
         {
-            return Math.Round(grossPay - dependentDeductions - employeeDeductions, 2);
+            return grossPay - dependentDeductions - employeeDeductions;
+        }
+
+        public List<decimal> CalculateEvenDistribution(decimal monthlyTotal, int periods)
+        {
+            var perPeriodUnrounded = monthlyTotal;
+            var perPeriodRounded = Math.Round(perPeriodUnrounded, 2, MidpointRounding.AwayFromZero);
+
+            var anualTotal = perPeriodUnrounded * periods;
+
+            var values = Enumerable.Repeat(perPeriodRounded, periods).ToList();
+            var totalRounded = perPeriodRounded * periods;
+            var remainder = Math.Round(anualTotal - totalRounded, 2);
+
+            int centsToDistribute = (int)(remainder * 100);
+            for (int i = 0; i < Math.Abs(centsToDistribute); i++)
+            {
+                if (centsToDistribute > 0)
+                    values[i] += 0.01m;
+                else if (centsToDistribute < 0)
+                    values[i] -= 0.01m;
+            }
+            return values;
         }
     }
 }

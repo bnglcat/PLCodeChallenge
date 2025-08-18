@@ -3,7 +3,7 @@
     public class PayrollConfiguration
     {
         public int Id { get; set; }
-       
+
         public int ClientId { get; set; }
 
         public int PayPeriodsPerYear { get; set; }

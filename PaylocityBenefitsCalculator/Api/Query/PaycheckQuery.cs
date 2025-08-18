@@ -7,7 +7,7 @@ namespace Api.Query
 {
     public interface IPaycheckQuery
     {
-        Task<GetPaycheckDto> GetPaycheckByEmployeeIdAsync(int employeeId);
+        Task<GetPaycheckDto> GetAllPaychecksByEmployeeIdAsync(int employeeId);
     }
 
     public class MockClient
@@ -33,7 +33,7 @@ namespace Api.Query
             _payrollConfigurationRepository = payrollConfigurationRepository;
         }
 
-        public async Task<GetPaycheckDto> GetPaycheckByEmployeeIdAsync(int employeeId)
+        public async Task<GetPaycheckDto> GetAllPaychecksByEmployeeIdAsync(int employeeId)
         {
             _payrollConfiguration = await _payrollConfigurationRepository.GetClientPayrollConfiguration(_mockClient.Id);
 
@@ -51,23 +51,39 @@ namespace Api.Query
 
             var payrollCalculator = PaycheckCalculatorFactory.CreatePaycheckCalculator(_payrollConfiguration);
 
-            var dependentMonthlyDeductions = payrollCalculator.CalculateDependentDeductions(employee.Dependents);
-            var employeeMonthlyDeductions = payrollCalculator.CalculateEmployeeDeductions(employee.Salary);
+            // Calculate per period totals
+            var dependentDeductionsPerPeriod = payrollCalculator.CalculateDependentDeductionsPerPeriod(employee.Dependents);
+            var employeeDeductionsPerPeriod = payrollCalculator.CalculateEmployeeDeductionsPerPeriod(employee.Salary);
+            var perPeriodGrossPay = payrollCalculator.CalculateGrossPayPerPeriod(employee.Salary);
 
-            var payCheck = new GetPaycheckDto
+            int periods = _payrollConfiguration.PayPeriodsPerYear;
+
+            // Distribute evenly across pay periods
+            var dependentDeductionsList = payrollCalculator.CalculateEvenDistribution(dependentDeductionsPerPeriod, periods);
+            var employeeDeductionsList = payrollCalculator.CalculateEvenDistribution(employeeDeductionsPerPeriod, periods);
+            var grossPayList = payrollCalculator.CalculateEvenDistribution(perPeriodGrossPay, periods);
+
+            var payCheckDto = new GetPaycheckDto
             {
                 EmployeeId = employee.Id,
                 EmployeeName = $"{employee.FirstName} {employee.LastName}",
-                Salary = employee.Salary,
-                GrossPay = payrollCalculator.CalculateGrossPay(employee.Salary),
-                DependentDeductions = dependentMonthlyDeductions,
-                EmployeeDeductions = employeeMonthlyDeductions
+                Salary = employee.Salary
             };
 
-          
-            return await Task.FromResult(payCheck);
-        }        
+            for (int i = 0; i < _payrollConfiguration.PayPeriodsPerYear; i++)
+            {
+                var paycheck = new Paycheck
+                {
+                    PayPeriod = i + 1,
+                    DependentDeductions = dependentDeductionsList[i],
+                    EmployeeDeductions = employeeDeductionsList[i],
+                    GrossPay = grossPayList[i]
+                };
+
+                payCheckDto.Paychecks.Add(paycheck);
+            }
+
+            return await Task.FromResult(payCheckDto);
+        }
     }
-
-
 }

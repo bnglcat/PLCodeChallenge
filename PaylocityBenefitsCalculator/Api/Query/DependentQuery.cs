@@ -15,7 +15,7 @@ namespace Api.Query
         private readonly IDependentRepository _dependentRepository;
 
         public DependentQuery(IDependentRepository DependentRepository)
-        { 
+        {
             _dependentRepository = DependentRepository;
         }
 
